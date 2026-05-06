@@ -1,0 +1,2 @@
+docker compose exec namenode sh -c "hdfs dfs -rmdir /data-lake/processed/load_metrics"
+docker compose exec namenode sh -c "hadoop jar /opt/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.4.3.jar -files /map_reducers/mr1_load_factor/mapper.py,/map_reducers/mr1_load_factor/reducer.py -input /data-lake/raw/*.txt -output /data-lake/processed/load_metrics -mapper mapper.py -reducer reducer.py "

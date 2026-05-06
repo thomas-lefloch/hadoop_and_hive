@@ -1,0 +1,2 @@
+docker compose exec namenode sh -c "hdfs dfs -put /files_to_add/*.txt /data-lake/raw/"
+rm ./files_to_add/*.txt # executed from project root
