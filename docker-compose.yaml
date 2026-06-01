@@ -29,6 +29,11 @@ services:
     volumes:
       - ./files_to_add:/files_to_add
       - ./map_reducers:/map_reducers
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9870"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
 
   datanode:
     build: .
@@ -62,3 +67,31 @@ services:
     command: ["yarn", "nodemanager"]
     env_file:
       - ./hadoop_conf.env
+
+  hive-db:
+    image: postgres:17.2-bookworm
+    environment:
+      POSTGRES_PASSWORD: "example"
+
+  hiveserver2-standalone:
+    image: apache/hive:4.0.1
+    depends_on:
+      hive-db:
+        condition: service_started
+      namenode:
+        condition: service_healthy
+    ports:
+      - 8080:8080
+    env_file:
+      - ./hadoop_conf.env
+    environment:
+      CORE_CONF_fs_defaultFS: hdfs://namenode:8020
+      SERVICE_NAME: hiveserver2
+      DB_DRIVER: postgres
+      SERVICE_OPTS: >-
+        -Djavax.jdo.option.ConnectionDriverName=org.postgresql.Driver
+        -Djavax.jdo.option.ConnectionURL=jdbc:postgresql://hive-db:5432/postgres
+        -Djavax.jdo.option.ConnectionUserName=postgres
+        -Djavax.jdo.option.ConnectionPassword=example
+    volumes:
+      - ./dependencies/postgresql-42.7.11.jar:/opt/hive/lib/postgres.jar
