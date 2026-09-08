@@ -1,3 +1,5 @@
+Projet réalisé dans le cadre de la formation "Data engineer" enseigné par Simplon
+
 # Exploration d'Hadoop, de MapReduce et de Hive
 
 il faut executer tous les scripts depuis la racine du projet
